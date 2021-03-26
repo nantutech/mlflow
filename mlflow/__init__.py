@@ -33,6 +33,7 @@ from mlflow.version import VERSION as __version__  # pylint: disable=unused-impo
 from mlflow.utils.logging_utils import _configure_mlflow_loggers
 import mlflow.tracking._model_registry.fluent
 import mlflow.tracking.fluent
+import mlflow.ntcore
 
 # Filter annoying Cython warnings that serve no good purpose, and so before
 # importing other modules.
@@ -144,6 +145,7 @@ delete_experiment = mlflow.tracking.fluent.delete_experiment
 delete_run = mlflow.tracking.fluent.delete_run
 register_model = mlflow.tracking._model_registry.fluent.register_model
 autolog = mlflow.tracking.fluent.autolog
+set_workspace_id = mlflow.ntcore.set_workspace_id
 
 
 run = projects.run
@@ -183,4 +185,5 @@ __all__ = [
     "set_registry_uri",
     "list_run_infos",
     "autolog",
+    "set_workspace_id",
 ] + _model_flavors_supported

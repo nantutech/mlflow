@@ -503,6 +503,8 @@ def _log_specialized_estimator_content(fitted_estimator, run_id, fit_args, fit_k
 
             try_mlflow_log(mlflow_client.log_artifacts, run_id, tmp_dir.path())
 
+    return name_metric_dict
+
 
 def _chunk_dict(d, chunk_size):
     # Copied from: https://stackoverflow.com/a/22878842

@@ -767,9 +767,11 @@ def autolog(
         referred to be `func_name` on the instance of `clazz` referred to by `self` & records
         MLflow parameters, metrics, tags, and artifacts to a corresponding MLflow Run.
         """
-        _log_pretraining_metadata(self, *args, **kwargs)
+        params = _log_pretraining_metadata(self, *args, **kwargs)
         fit_output = original(self, *args, **kwargs)
-        _log_posttraining_metadata(self, *args, **kwargs)
+        metrics = _log_posttraining_metadata(self, *args, **kwargs)
+        mlflow.ntcore._emit_model_to_ntcore(self, params, metrics)
+
         return fit_output
 
     def _log_pretraining_metadata(estimator, *args, **kwargs):  # pylint: disable=unused-argument
@@ -799,7 +801,9 @@ def autolog(
             truncated = _truncate_dict(chunk, MAX_ENTITY_KEY_LENGTH, MAX_PARAM_VAL_LENGTH)
             try_mlflow_log(mlflow.log_params, truncated)
 
-        try_mlflow_log(mlflow.set_tags, _get_estimator_info_tags(estimator))
+        tags = _get_estimator_info_tags(estimator)
+        try_mlflow_log(mlflow.set_tags, tags)
+        return {**truncated, **tags}
 
     def _log_posttraining_metadata(estimator, *args, **kwargs):
         """
@@ -828,7 +832,7 @@ def autolog(
                 try_mlflow_log(mlflow.log_metric, "training_score", training_score)
 
         # log common metrics and artifacts for estimators (classifier, regressor)
-        _log_specialized_estimator_content(estimator, mlflow.active_run().info.run_id, args, kwargs)
+        metrics = _log_specialized_estimator_content(estimator, mlflow.active_run().info.run_id, args, kwargs)
 
         def get_input_example():
             # Fetch an input example using the first several rows of the array-like
@@ -918,6 +922,9 @@ def autolog(
                         " Exception: {}".format(str(e))
                     )
                     _logger.warning(msg)
+
+        # Return the metrics from training.       
+        return metrics
 
     def patched_fit(original, self, *args, **kwargs):
         """
