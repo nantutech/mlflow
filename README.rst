@@ -11,7 +11,25 @@ Install MLflow from PyPI via ``pip3 install mlflow-nantu/``
 
 Launching the Tracking UI (Optional)
 ------------------------------------
-Follow the `instruction <https://github.com/dsp-columbus/ntcore>`_ to launch the ntcore server.
+Prerequisite
+------------
+Follow this [instruction](https://docs.docker.com/get-started/#download-and-install-docker) to download and install the Docker engine.
+
+Cloning this repository
+-----------------------
+Clone this repository via ``git clone https://github.com/dsp-columbus/ntcore.git``
+
+Building frontend assets 
+------------------------
+    cd webapp/
+    npm install
+    npm run build
+
+Starting ntcore server
+----------------------
+    cd ../
+    npm install
+    npm run dev
 
 Training a model 
 ----------------
