@@ -22,7 +22,7 @@ Building frontend assets::
     npm install
     npm run build
 
-Starting ntcore server
+Starting ntcore server::
 
     cd ../
     npm install
