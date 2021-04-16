@@ -8,7 +8,7 @@ from requests.exceptions import ConnectionError
 
 _logger = logging.getLogger(__name__)
 
-NTCORE_HOST = os.getenv('NTCORE_HOST') is not None or 'http://localhost:8180'
+NTCORE_HOST = os.getenv('NTCORE_HOST') if os.getenv('NTCORE_HOST') is not None else 'http://localhost:8180'
 BASE_URL = '{ntcore_host}/dsp/api/v1/workspace/{workspace_id}/experiment'
 
 
