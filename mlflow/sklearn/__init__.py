@@ -770,7 +770,7 @@ def autolog(
         params = _log_pretraining_metadata(self, *args, **kwargs)
         fit_output = original(self, *args, **kwargs)
         metrics = _log_posttraining_metadata(self, *args, **kwargs)
-        mlflow.ntcore._emit_model_to_ntcore(self, params, metrics)
+        mlflow.ntcore._emit_model_to_ntcore(self, FLAVOR_NAME, params, metrics)
 
         return fit_output
 

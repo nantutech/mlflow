@@ -22,6 +22,13 @@ def set_workspace_id(workspace_id):
     os.environ[NTCORE_WORKSPACE_ID] = workspace_id
     
 
+def print_workspace_id():
+    """
+    Prints the current workspace id.
+    """
+    print(_get_workspace_id())
+
+
 def _get_workspace_id():
     """
     Retrieves workspace id.
@@ -42,7 +49,19 @@ def _get_workspace_id():
         return
 
 
-def _emit_model_to_ntcore(estimator, parameters, metrics):
+def _get_runtime_version():
+    """
+    Retrieves runtime version.
+    """
+    try:
+        runtime_version = os.environ["DSP_RUNTIME_VERSION"]
+        return runtime_version
+    except Exception as e:
+        _logger.warning("Please set env variable 'DSP_RUNTIME_VERSION'. Acceptable values are 'python-3.7', 'python-3.8' and 'python-3.9'.")
+        return
+
+
+def _emit_model_to_ntcore(estimator, framework, parameters, metrics):
     """
     Sends metrics to ntcore server.
     """
@@ -53,7 +72,9 @@ def _emit_model_to_ntcore(estimator, parameters, metrics):
 
     endpoint = BASE_URL.format(ntcore_host=NTCORE_HOST, workspace_id=workspace_id)
     model_blob = pickle.dumps(estimator)
-    payload = { "parameters": json.dumps(parameters),
+    payload = { "runtime": _get_runtime_version(),
+                "framework": framework,
+                "parameters": json.dumps(parameters),
                 "metrics": json.dumps(metrics), 
                 "model": base64.b64encode(model_blob) }
     try:
