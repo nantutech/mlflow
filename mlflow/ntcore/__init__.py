@@ -5,14 +5,13 @@ import pickle
 import base64
 import json
 from requests.exceptions import ConnectionError
-from pathlib import Path
+import pathlib
 
 _logger = logging.getLogger(__name__)
 
 NTCORE_WORKSPACE_ID = 'NTCORE_WORKSPACE_ID'
 NTCORE_HOST = os.getenv('NTCORE_HOST') if os.getenv('NTCORE_HOST') is not None else 'http://localhost:8180'
 BASE_URL = '{ntcore_host}/dsp/api/v1/workspace/{workspace_id}/experiment'
-VAR_SEPARATOR = '='
 
 
 def set_workspace_id(workspace_id):
@@ -38,15 +37,14 @@ def _get_workspace_id():
         return workspace_id
     except Exception as e:
         pass
-    
+
     try:
-        var_file_path = os.path.join(Path.home(), '.ntcorevar')
-        var_list = map(lambda l: l.split(VAR_SEPARATOR, 1), filter(lambda l: VAR_SEPARATOR in l, open(var_file_path)))
-        var_map = { t[0].strip(): t[1].strip() for t in var_list }
-        return var_map[NTCORE_WORKSPACE_ID] if NTCORE_WORKSPACE_ID in var_map else None
+        workDir = pathlib.Path().absolute()
+        relative_path = os.path.relpath(workDir, os.environ['DSP_INSTANCE_HOME'])
+        return relative_path.split('/')[0]
     except Exception as e:
-        _logger.warning('Unable to parse ntcore vars: {0}.'.format(e))
-        return
+        _logger.warning('Unable to read workspace id from work dir: {0}.'.format(e))
+        return None
 
 
 def _get_runtime_version():
